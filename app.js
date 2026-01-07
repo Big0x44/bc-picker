@@ -215,25 +215,22 @@ class WheelOfFortune {
     }
 
     async getRandomNumber(min, max) {
-        if (typeof RANDOM_ORG_API_KEY === 'undefined' || !RANDOM_ORG_API_KEY) {
-            throw new Error('API key not configured');
+        // Get Cloudflare Worker URL from config (fallback to default if not set)
+        const workerUrl = typeof CLOUDFLARE_WORKER_URL !== 'undefined' && CLOUDFLARE_WORKER_URL 
+            ? CLOUDFLARE_WORKER_URL 
+            : 'https://buseiherr-wahlwerk-proxy.YOUR_SUBDOMAIN.workers.dev';
+
+        // Check if worker URL is still the placeholder
+        if (workerUrl.includes('YOUR_SUBDOMAIN')) {
+            throw new Error('Cloudflare Worker URL not configured. Please set CLOUDFLARE_WORKER_URL in config.js');
         }
 
-        const url = 'https://api.random.org/json-rpc/4/invoke';
         const requestBody = {
-            jsonrpc: '2.0',
-            method: 'generateIntegers',
-            params: {
-                apiKey: RANDOM_ORG_API_KEY,
-                n: 1,
-                min: min,
-                max: max,
-                replacement: true
-            },
-            id: Date.now()
+            min: min,
+            max: max
         };
 
-        const response = await fetch(url, {
+        const response = await fetch(workerUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -242,20 +239,21 @@ class WheelOfFortune {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
 
         if (data.error) {
-            throw new Error(data.error.message || 'Random.org API error');
+            throw new Error(data.error || 'Failed to get random number');
         }
 
-        if (data.result && data.result.random && data.result.random.data) {
-            return data.result.random.data[0];
+        if (data.success && typeof data.randomNumber === 'number') {
+            return data.randomNumber;
         }
 
-        throw new Error('Invalid response from random.org API');
+        throw new Error('Invalid response from proxy API');
     }
 
     showWinner(winner) {

@@ -1,6 +1,12 @@
 # API Key Configuration (DO NOT COMMIT)
 config.js
 
+# Cloudflare Workers local development secrets
+.dev.vars
+
+# Node modules (if using wrangler locally)
+node_modules/
+
 # OS files
 .DS_Store
 Thumbs.db
