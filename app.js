@@ -81,14 +81,14 @@ class WheelOfFortune {
             ctx.translate(centerX, centerY);
             ctx.beginPath();
             ctx.arc(0, 0, radius, 0, Math.PI * 2);
-            ctx.fillStyle = '#f0f0f0';
+            ctx.fillStyle = '#2a2a3e';
             ctx.fill();
-            ctx.strokeStyle = '#ddd';
+            ctx.strokeStyle = '#3a3a4e';
             ctx.lineWidth = 3;
             ctx.stroke();
             
             // Draw text
-            ctx.fillStyle = '#999';
+            ctx.fillStyle = '#888';
             ctx.font = 'bold 24px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
