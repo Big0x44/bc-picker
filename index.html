@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuSeiHerrWahlWerk</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>BuSeiHerrWahlWerk</h1>
+        
+        <div class="person-controls">
+            <h2>Teilnehmer auswählen</h2>
+            <div class="button-group">
+                <button class="person-btn" data-person="D" id="btn-D">
+                    <span class="person-name">D</span>
+                </button>
+                <button class="person-btn" data-person="F" id="btn-F">
+                    <span class="person-name">F</span>
+                </button>
+                <button class="person-btn" data-person="J" id="btn-J">
+                    <span class="person-name">J</span>
+                </button>
+                <button class="person-btn" data-person="M" id="btn-M">
+                    <span class="person-name">M</span>
+                </button>
+                <button class="person-btn" data-person="O" id="btn-O">
+                    <span class="person-name">O</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="wheel-container">
+            <div class="wheel-wrapper">
+                <canvas id="wheel-canvas" width="500" height="500"></canvas>
+                <div class="wheel-center"></div>
+                <div class="wheel-pointer"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="spin-btn" class="spin-button" disabled>Rad drehen!</button>
+        </div>
+
+        <div id="winner-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="confetti-container"></div>
+                <h2 class="winner-title">🎉 Gewinner! 🎉</h2>
+                <div class="winner-name" id="winner-name"></div>
+                <button class="close-modal" id="close-modal">Schließen</button>
+            </div>
+        </div>
+
+        <div id="error-message" class="error-message hidden"></div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
