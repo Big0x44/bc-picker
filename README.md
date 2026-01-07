@@ -1,6 +1,6 @@
-# BuSeiHerrWahlWerk
+# Wheel of Fortune - Person Picker
 
-A web application for randomly selecting a person from a group using a wheel of fortune, powered by the Random.org API. The API key is securely protected using Cloudflare Workers.
+A web application for randomly selecting a person from a group using a wheel of fortune, powered by the Random.org API.
 
 ## Features
 
@@ -9,7 +9,6 @@ A web application for randomly selecting a person from a group using a wheel of 
 - **Visual Wheel**: Beautiful animated wheel showing only active participants
 - **Random Selection**: Uses Random.org API for true randomness
 - **Winner Animation**: Exciting confetti and animation effects when displaying the winner
-- **Secure API Key**: API key is protected server-side using Cloudflare Workers
 
 ## Setup Instructions
 
@@ -18,58 +17,19 @@ A web application for randomly selecting a person from a group using a wheel of 
 1. Visit [Random.org Client Area](https://www.random.org/clients/)
 2. Sign up for a free account (Developer Plan)
 3. Create a new API key
-4. Copy your API key (you'll need it for step 3)
+4. Copy your API key
 
-### 2. Set Up Cloudflare Workers
+### 2. Configure the API Key
 
-1. **Create a Cloudflare account** (if you don't have one)
-   - Go to [Cloudflare](https://dash.cloudflare.com/sign-up)
-   - Sign up for a free account
-
-2. **Install Wrangler CLI** (Cloudflare's command-line tool)
-   ```bash
-   npm install -g wrangler
-   # or
-   npm install wrangler --save-dev
-   ```
-
-3. **Login to Cloudflare**
-   ```bash
-   wrangler login
-   ```
-   This will open your browser to authenticate.
-
-4. **Deploy the Cloudflare Worker**
-   ```bash
-   wrangler deploy
-   ```
-   This will deploy the worker from `worker.js` to Cloudflare.
-
-5. **Set the API Key as a Secret**
-   ```bash
-   wrangler secret put RANDOM_ORG_API_KEY
-   ```
-   When prompted, paste your Random.org API key. This stores it securely in Cloudflare (not in your code).
-
-6. **Get your Worker URL**
-   After deployment, Wrangler will show you the worker URL, or you can find it in the Cloudflare dashboard.
-   The URL will look like: `https://buseiherr-wahlwerk-proxy.YOUR_SUBDOMAIN.workers.dev`
-
-### 3. Configure the Frontend
-
-1. Copy `config.example.js` to `config.js`:
-   ```bash
-   cp config.example.js config.js
-   ```
-
-2. Open `config.js` and replace `YOUR_SUBDOMAIN` with your actual Cloudflare Workers subdomain:
+1. Open `config.js`
+2. Replace `'YOUR_API_KEY_HERE'` with your actual API key:
    ```javascript
-   const CLOUDFLARE_WORKER_URL = 'https://buseiherr-wahlwerk-proxy.your-subdomain.workers.dev';
+   const RANDOM_ORG_API_KEY = 'your-actual-api-key-here';
    ```
 
-**Note**: The `config.js` file is in `.gitignore` to keep your worker URL private (optional, but recommended).
+**IMPORTANT**: The `config.js` file is already in `.gitignore` to prevent accidentally committing your API key. Never commit this file to version control!
 
-### 4. Deploy to GitHub Pages
+### 3. Deploy to GitHub Pages
 
 1. Push your code to a GitHub repository
 2. Go to repository Settings → Pages
@@ -81,10 +41,7 @@ Your app will be available at `https://yourusername.github.io/repository-name/`
 
 ## Local Development
 
-### Frontend Development
-
-1. Make sure you've configured `config.js` with your Cloudflare Worker URL (see step 3 above)
-2. Start a local server:
+Simply open `index.html` in a web browser, or use a local server:
 
 ```bash
 # Using Python 3
@@ -97,25 +54,7 @@ npx http-server
 php -S localhost:8000
 ```
 
-3. Visit `http://localhost:8000` in your browser
-
-### Testing Cloudflare Worker Locally
-
-You can test the Cloudflare Worker locally before deploying:
-
-```bash
-# Start local development server
-wrangler dev
-
-# The worker will be available at http://localhost:8787
-# Update config.js temporarily to use http://localhost:8787 for local testing
-```
-
-**Note**: For local testing, you'll need to set the secret locally:
-```bash
-# Create a .dev.vars file (this is gitignored)
-echo 'RANDOM_ORG_API_KEY=your-api-key-here' > .dev.vars
-```
+Then visit `http://localhost:8000` in your browser.
 
 ## Usage
 
@@ -126,49 +65,26 @@ echo 'RANDOM_ORG_API_KEY=your-api-key-here' > .dev.vars
 3. Click "Spin the Wheel!" to randomly select a winner
 4. The winner will be displayed with confetti animation
 
-## Security
+## Security Note
 
-### API Key Protection
+⚠️ **IMPORTANT**: The API key is stored in `config.js` which is excluded from version control via `.gitignore`. However, since this is a **client-side application**, the API key will be visible in the browser's developer tools when the page loads.
 
-✅ **The Random.org API key is now fully protected!**
+### Current Protection:
+- ✅ `config.js` is in `.gitignore` - your API key won't be committed to the repository
+- ✅ Only you need to configure it locally or in your deployment
 
-- The API key is stored securely in **Cloudflare Workers Secrets** (server-side)
-- The API key is **never** exposed to the client-side code
-- The frontend only calls your Cloudflare Worker endpoint (which doesn't contain the key)
-- The worker acts as a secure proxy between your frontend and Random.org
+### Limitations:
+- ⚠️ The API key will be visible in the browser's developer tools (this is unavoidable for client-side apps)
+- ⚠️ Anyone who views the page source can see the API key
 
-### Architecture
+### For Enhanced Security (Optional):
+If you need true API key protection, you would need to:
+1. **Use a Backend Proxy**: Create a server-side endpoint that makes the Random.org API calls
+2. **Use GitHub Actions**: Build the site with the API key injected, but this still exposes it client-side
+3. **Use Random.org's Usage Limits**: Set up usage limits on your API key to prevent abuse
+4. **Use CORS Restrictions**: Configure your Random.org API key to only accept requests from your domain
 
-```
-Frontend (GitHub Pages) 
-    ↓ (no API key)
-Cloudflare Worker (has API key in secrets)
-    ↓ (API key used here)
-Random.org API
-```
-
-### Additional Security Recommendations
-
-1. **Rate Limiting**: Consider adding rate limiting to your Cloudflare Worker to prevent abuse
-2. **CORS Configuration**: The worker allows all origins by default (`*`). For production, you may want to restrict this to your GitHub Pages domain
-3. **Monitor Usage**: Check your Cloudflare Workers dashboard regularly for unusual activity
-4. **Random.org Limits**: Set up usage limits on your Random.org API key as an additional safeguard
-
-### Updating the Worker
-
-If you need to update the worker code:
-
-```bash
-# Make changes to worker.js
-# Then redeploy
-wrangler deploy
-```
-
-If you need to update the API key:
-
-```bash
-wrangler secret put RANDOM_ORG_API_KEY
-```
+For most personal/educational use cases, the current setup (with `config.js` in `.gitignore`) is sufficient.
 
 ## Browser Compatibility
 
