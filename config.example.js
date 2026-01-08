@@ -4,3 +4,4 @@
 // DO NOT commit config.js to version control!
 
 const RANDOM_ORG_API_KEY = 'YOUR_API_KEY_HERE';
+const NOISE_CATEGORY = 9;

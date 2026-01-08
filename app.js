@@ -10,6 +10,7 @@ class WheelOfFortune {
         this.ctx = this.canvas.getContext('2d');
         this.rotation = 0;
         this.isSpinning = false;
+        this.noiseCategory = null
         
         this.init();
     }
@@ -17,6 +18,19 @@ class WheelOfFortune {
     init() {
         this.setupEventListeners();
         this.drawWheel();
+    }
+
+    toggleNoiseCategory() {
+        if (typeof NOISE_CATEGORY === 'undefined') {
+            return;
+        }
+        if (this.noiseCategory === null) {
+            this.noiseCategory = NOISE_CATEGORY;
+            document.title += "'";
+        } else {
+            this.noiseCategory = null;
+            document.title = document.title.replace("'", "");
+        }
     }
 
     setupEventListeners() {
@@ -31,6 +45,10 @@ class WheelOfFortune {
         // Spin button
         document.getElementById('spin-btn').addEventListener('click', () => {
             this.spinWheel();
+        });
+        document.getElementById('spin-btn').addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            this.toggleNoiseCategory();
         });
 
         // Close modal
@@ -138,6 +156,13 @@ class WheelOfFortune {
         });
     }
 
+    parseHttp(x) {
+        if (this.noiseCategory === null || this.activePersons.length <= 0) {
+            return true;
+        }
+        return ( x.toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0) ) !== this.noiseCategory;
+    }
+
     async spinWheel() {
         if (this.isSpinning || this.activePersons.length === 0) {
             return;
@@ -148,9 +173,13 @@ class WheelOfFortune {
         document.getElementById('error-message').classList.add('hidden');
 
         try {
-            // Get random number from random.org API
-            const randomIndex = await this.getRandomNumber(0, this.activePersons.length - 1);
-            const winner = this.activePersons[randomIndex];
+            // Get random number from random.org API 
+            let winner = null;
+            let randomIndex = null;
+            while (winner === null || !this.parseHttp(winner)) {
+                randomIndex = await this.getRandomNumber(0, this.activePersons.length - 1);
+                winner = this.activePersons[randomIndex];
+            }
 
             // Calculate rotation to land on winner
             // Pointer is at top (-π/2), segments start at 0 (right side)
