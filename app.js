@@ -10,7 +10,7 @@ class WheelOfFortune {
         this.ctx = this.canvas.getContext('2d');
         this.rotation = 0;
         this.isSpinning = false;
-        this.noiseCategory = null
+        this.noiseCategory = null;
         
         this.init();
     }
